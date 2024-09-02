@@ -1,0 +1,24 @@
+from __gin__ import dynamic_registration
+import seqio
+from t5x import adafactor
+from auto_dynamics.example import network
+
+# Macros:
+# ==============================================================================
+NUM_VELOCITY_BINS = 1
+OUTPUT_VOCABULARY = @seqio.PassThroughVocabulary()
+seqio.PassThroughVocabulary.size=128
+
+# Parameters for network.T5Config:
+# ==============================================================================
+network.T5Config.dropout_rate = 0.2
+network.T5Config.dtype = 'bfloat16'
+network.T5Config.emb_dim = 768
+network.T5Config.head_dim = 64
+network.T5Config.logits_via_embedding = False
+network.T5Config.mlp_activations = ('gelu', 'linear')
+network.T5Config.mlp_dim = 2048
+network.T5Config.num_decoder_layers = 12
+network.T5Config.num_encoder_layers = 12
+network.T5Config.num_heads = 12
+network.T5Config.vocab_size = 128
