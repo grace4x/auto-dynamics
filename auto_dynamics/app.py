@@ -307,9 +307,10 @@ class InferenceModel(object):
     return ds
 
 
-def get_transcription_b64(model: InferenceModel, midi_file) -> str:
+def get_transcription_b64(model: InferenceModel, midi_file, control_changes) -> str:
   est_ns = model(midi_file)
   tmp_path = gen_tmp_path()
+  est_ns.control_changes.extend(control_changes)
   note_seq.sequence_proto_to_midi_file(est_ns, tmp_path)
   try:
     with open(tmp_path, "rb") as f:
@@ -334,11 +335,13 @@ def gen_tmp_path():
 
 def main(args):
   app.parse_flags_with_usage(args)
-  midi_file = '/home/grace/chopin_op25_e1.mid'
+  midi_file = '/home/grace/elegy-2013.mid'
   piano_model = InferenceModel('/home/grace/model/mse1hot/checkpoint_3000000')
 
-  midi_bin = get_transcription_b64(piano_model, midi_file)
-  with open('/home/grace/my_model_chopin.midi', 'wb') as m:
+  midi_note_seq = note_seq.midi_file_to_note_sequence(midi_file)
+
+  midi_bin = get_transcription_b64(piano_model, midi_file, midi_note_seq.control_changes)
+  with open('/home/grace/rach_elegy_with_pedal.midi', 'wb') as m:
     m.write(midi_bin)
 
 

@@ -301,9 +301,11 @@ class InferenceModel(object):
     return ds
 
 
-def get_transcription_b64(est_ns) -> str:
+def get_transcription_b64(est_ns, control_changes) -> str:
   tmp_path = gen_tmp_path()
   note_seq.sequence_proto_to_midi_file(est_ns, tmp_path)
+  est_ns.control_changes.extend(control_changes)
+
   try:
     with open(tmp_path, "rb") as f:
       data = f.read()
@@ -331,7 +333,7 @@ def main(args):
   app.parse_flags_with_usage(args)
   model_path = '/home/grace/model/'
   checkpoint_path = 'mse1hot/checkpoint_3000000'
-  eval_path = '/home/grace/evaluation/' + checkpoint_path
+  eval_path = '/home/grace/evaluation/' + checkpoint_path + '-pedal'
   os.makedirs(eval_path, exist_ok=True)
 
   piano_model = InferenceModel(model_path + checkpoint_path)
@@ -348,15 +350,19 @@ def main(args):
       row = line.strip().split(',')
       data.append(row)
       if (row[4]=='midi_filename'): continue
-      if line.__contains__('validation'):
-        ind = line.index('validation')
+      if line.__contains__('test'):
+        ind = line.index('test')
         name = line[:ind].replace('"', '')
         if done_pieces.__contains__(name): continue
         done_pieces.add(name)
-        midi_file_name = '/home/grace/datasets/maestro/v3.0.0/orig/maestro-v3.0.0/'+row[-3] 
+
+        midi_file_name = '/home/grace/datasets/maestro/v3.0.0/orig/maestro-v3.0.0/'+row[-3]         
+
         print(f"{datetime.datetime.now().isoformat()} processing: {midi_file_name}")
         nns, loss = piano_model(midi_file_name)
-        midi_bin = get_transcription_b64(nns)
+        midi_note_seq = note_seq.midi_file_to_note_sequence(midi_file_name)
+        midi_bin = get_transcription_b64(nns, midi_note_seq.control_changes)
+
         name = name.replace('/', '-').replace('\'','').replace('"','').replace(' ','')
         with open(f'{eval_path}/{name}.midi', 'wb') as m:
           m.write(midi_bin)
