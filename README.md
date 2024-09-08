@@ -4,7 +4,7 @@ This is a Transformer model that generates human-like musical dynamics given a M
 
 See [StyleNet](https://github.com/imalikshake/StyleNet) or [MIDI-DDSP](https://github.com/magenta/midi-ddsp) for similar projects.
 
-If you wish to learn more, please check out the [Auto-Dynamics](https://grace4x.github.io/auto-dynamics-siste) site
+If you wish to learn more, please check out the [Auto-Dynamics](https://grace4x.github.io/auto-dynamics-site) site
 
 # Dataset
 The dataset used is [MAESTRO V3.0.0](https://magenta.tensorflow.org/datasets/maestro) under a [Creative Commons license](https://creativecommons.org/licenses/by-nc-sa/4.0/).
