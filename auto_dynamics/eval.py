@@ -303,8 +303,8 @@ class InferenceModel(object):
 
 def get_transcription_b64(est_ns, control_changes) -> str:
   tmp_path = gen_tmp_path()
-  note_seq.sequence_proto_to_midi_file(est_ns, tmp_path)
   est_ns.control_changes.extend(control_changes)
+  note_seq.sequence_proto_to_midi_file(est_ns, tmp_path)
 
   try:
     with open(tmp_path, "rb") as f:
